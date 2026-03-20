@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      --bg-1: #121212;
+      --bg-2: #090909;
+      --bg-3: #050505;
+      --text: #f0f0f0;
+      --panel-bg: #0a0a0a;
+      --panel-border: #1f1f1f;
+      --chrome-bg: rgba(8, 8, 8, 0.72);
+      --chrome-border: #232323;
+      --muted: #888;
+      --badge: #555;
+      --field-bg: #111;
+      --field-border: #2a2a2a;
+      --input-text: #ccc;
+      --placeholder: #444;
+      --button-bg: #f0f0f0;
+      --button-fg: #0a0a0a;
+      --button-hover: #fff;
+      --copy-border: #333;
+      --copy-text: #555;
+      --copy-hover-text: #aaa;
+      --copy-hover-border: #555;
+      --divider: #222;
+      --stat-label: #444;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      color-scheme: dark;
+    }
+
+    body[data-theme="light"] {
+      --bg-1: #f7f5f1;
+      --bg-2: #ece8df;
+      --bg-3: #ddd7ca;
+      --text: #1a1815;
+      --panel-bg: #f9f8f4;
+      --panel-border: #d9d3c7;
+      --chrome-bg: rgba(249, 248, 244, 0.82);
+      --chrome-border: #d1cabd;
+      --muted: #6f675b;
+      --badge: #827866;
+      --field-bg: #f2efe7;
+      --field-border: #d8d2c6;
+      --input-text: #2b251d;
+      --placeholder: #9b917f;
+      --button-bg: #1d1914;
+      --button-fg: #f3eee4;
+      --button-hover: #2b251d;
+      --copy-border: #cfc8bb;
+      --copy-text: #6f675b;
+      --copy-hover-text: #3f382e;
+      --copy-hover-border: #9f9688;
+      --divider: #d8d2c6;
+      --stat-label: #7f7668;
+      --shadow: 0 20px 50px rgba(71, 60, 45, 0.16);
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: radial-gradient(circle at top, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+      color: var(--text);
+      padding: 1.25rem;
+    }
+
+    .page {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .top-menu {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--chrome-border);
+      background: var(--chrome-bg);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      backdrop-filter: blur(6px);
+    }
+
+    .menu-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--field-border);
+      background: var(--field-bg);
+      color: var(--input-text);
+      border-radius: 999px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, transform 0.15s;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--copy-hover-border);
+      color: var(--copy-hover-text);
+      transform: translateY(-1px);
+    }
+
+    .d1 {
+      width: min(840px, 100%);
+      font-family: 'DM Sans', sans-serif;
+      background: var(--panel-bg);
+      min-height: 420px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+      align-self: center;
+    }
+
+    .d1-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--badge);
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    .d1-title {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+
+    .d1-heading {
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2.5rem;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .d1-form {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .d1-input-wrap {
+      display: flex;
+      border: 1px solid var(--field-border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--field-bg);
+    }
+
+    .d1-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-family: 'DM Mono', monospace;
+      color: var(--input-text);
+      min-width: 0;
+    }
+
+    .d1-input::placeholder {
+      color: var(--placeholder);
+    }
+
+    .d1-btn {
+      background: var(--button-bg);
+      color: var(--button-fg);
+      border: none;
+      padding: 13px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .d1-btn:hover {
+      background: var(--button-hover);
+    }
+
+    .d1-result {
+      margin-top: 1.5rem;
+      padding: 14px 16px;
+      background: var(--field-bg);
+      border: 1px solid var(--field-border);
+      border-radius: 6px;
+      display: none;
+      gap: 0.75rem;
+    }
+
+    .d1-result.show {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .d1-result-url {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .d1-copy {
+      font-size: 11px;
+      color: var(--copy-text);
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+      border: 1px solid var(--copy-border);
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: transparent;
+    }
+
+    .d1-copy:hover {
+      color: var(--copy-hover-text);
+      border-color: var(--copy-hover-border);
+    }
+
+    .d1-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      align-items: center;
+    }
+
+    .d1-stat {
+      text-align: center;
+    }
+
+    .d1-stat-n {
+      font-family: 'DM Mono', monospace;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .d1-stat-l {
+      font-size: 11px;
+      color: var(--stat-label);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .d1-divider {
+      width: 1px;
+      background: var(--divider);
+      align-self: stretch;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 0.8rem;
+      }
+
+      .top-menu {
+        padding: 0.55rem 0.7rem;
+      }
+
+      .d1 {
+        padding: 2rem 1rem;
+      }
+
+      .d1-heading {
+        font-size: 24px;
+      }
+
+      .d1-input-wrap {
+        flex-direction: column;
+      }
+
+      .d1-btn {
+        width: 100%;
+      }
+
+      .d1-result.show {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .d1-stats {
+        width: 100%;
+        gap: 1rem;
+        justify-content: space-between;
+      }
+
+      .d1-divider {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-menu">
+      <span class="menu-title">URL Shortener</span>
+      <button class="theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()">Light</button>
+    </div>
+
+    <div class="d1">
+      <div class="d1-badge">v1.0 | url shortener</div>
+      <p class="d1-title">paste your long url</p>
+      <p class="d1-heading">Make it short.</p>
+
+      <div class="d1-form">
+        <div class="d1-input-wrap">
+          <input class="d1-input" id="d1in" placeholder="https://your-very-long-url.com/goes/here" />
+          <button class="d1-btn" type="button" onclick="d1shorten()">Shorten -&gt;</button>
+        </div>
+
+        <div class="d1-result" id="d1res">
+          <span class="d1-result-url" id="d1url">sho.rt/x9k2m</span>
+          <button class="d1-copy" type="button" onclick="d1copy()">copy</button>
+        </div>
+      </div>
+
+      <div class="d1-stats">
+        <div class="d1-stat">
+          <div class="d1-stat-n">12.4k</div>
+          <div class="d1-stat-l">links created</div>
+        </div>
+        <div class="d1-divider"></div>
+        <div class="d1-stat">
+          <div class="d1-stat-n">98.1k</div>
+          <div class="d1-stat-l">total clicks</div>
+        </div>
+        <div class="d1-divider"></div>
+        <div class="d1-stat">
+          <div class="d1-stat-n">99.9%</div>
+          <div class="d1-stat-l">uptime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const THEME_KEY = 'goapp-theme';
+
+    function setTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      window.localStorage.setItem(THEME_KEY, theme);
+    }
+
+    function getPreferredTheme() {
+      const saved = window.localStorage.getItem(THEME_KEY);
+      if (saved === 'dark' || saved === 'light') {
+        return saved;
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function toggleTheme() {
+      const current = document.body.getAttribute('data-theme') || 'dark';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    function d1copy() {
+      const resultText = document.getElementById('d1url').textContent;
+      const copyButton = document.querySelector('.d1-copy');
+
+      navigator.clipboard.writeText(resultText).catch(function () {
+        return null;
+      });
+
+      copyButton.textContent = 'copied!';
+      setTimeout(function () {
+        copyButton.textContent = 'copy';
+      }, 1200);
+    }
+
+    setTheme(getPreferredTheme());
+  </script>
+</body>
+</html>
