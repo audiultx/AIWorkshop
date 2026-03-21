@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Shortener</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      background: rgba(249, 248, 244, 0.82);
+    }
+
+    :root.dark {
+      background: rgba(8, 8, 8, 0.72);
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .d1 {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 420px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      box-sizing: border-box;
+    }
+
+    .d1-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .d1-title {
+      font-size: 13px;
+      font-weight: 300;
+      color: #888;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+
+    .d1-heading {
+      font-size: 28px;
+      font-weight: 500;
+      color: #f0f0f0;
+      margin-bottom: 2.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .d1-form {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .d1-input-wrap {
+      display: flex;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #111;
+    }
+
+    .d1-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-family: 'DM Mono', monospace;
+      color: #ccc;
+    }
+
+    .d1-input::placeholder {
+      color: #444;
+    }
+
+    .d1-btn {
+      background: #f0f0f0;
+      color: #0a0a0a;
+      border: none;
+      padding: 13px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .d1-btn:hover {
+      background: #fff;
+    }
+
+    .d1-result {
+      margin-top: 1.5rem;
+      padding: 14px 16px;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .d1-result.show {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .d1-result-url {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: #f0f0f0;
+    }
+
+    .d1-copy {
+      font-size: 11px;
+      color: #555;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+      border: 1px solid #333;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .d1-copy:hover {
+      color: #aaa;
+      border-color: #555;
+    }
+
+    .d1-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .d1-stat {
+      text-align: center;
+    }
+
+    .d1-stat-n {
+      font-family: 'DM Mono', monospace;
+      font-size: 20px;
+      font-weight: 500;
+      color: #f0f0f0;
+    }
+
+    .d1-stat-l {
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .d1-divider {
+      width: 1px;
+      background: #222;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    .theme-toggle button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .theme-toggle button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 dark:bg-[#0a0a0a] p-8">
+  <div class="w-full flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold text-blue-600 dark:text-white">URL Shortener</h1>
+    <div class="theme-toggle" id="themeToggle">
+      <button onclick="toggleTheme()">
+        <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+          </path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="d1">
+    <div class="d1-badge">v1.0 · url shortener</div>
+    <p class="d1-title">paste your long url</p>
+    <p class="d1-heading">Make it short.</p>
+    <div class="d1-form">
+      <div class="d1-input-wrap">
+        <input class="d1-input" id="d1in" placeholder="https://your-very-long-url.com/goes/here" />
+        <button class="d1-btn" onclick="d1shorten()">Shorten →</button>
+      </div>
+      <div class="d1-result" id="d1res">
+        <span class="d1-result-url" id="d1url">sho.rt/x9k2m</span>
+        <span class="d1-copy" onclick="d1copy()">copy</span>
+      </div>
+    </div>
+    <div class="d1-stats">
+      <div class="d1-stat">
+        <div class="d1-stat-n">12.4k</div>
+        <div class="d1-stat-l">links created</div>
+      </div>
+      <div class="d1-divider"></div>
+      <div class="d1-stat">
+        <div class="d1-stat-n">98.1k</div>
+        <div class="d1-stat-l">total clicks</div>
+      </div>
+      <div class="d1-divider"></div>
+      <div class="d1-stat">
+        <div class="d1-stat-n">99.9%</div>
+        <div class="d1-stat-l">uptime</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const path = document.querySelector('#themeIcon path');
+      if (html.classList.contains('dark')) {
+        path.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+      } else {
+        path.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+      }
+    }
+  </script>
+</body>
+
+</html>
