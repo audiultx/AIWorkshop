@@ -31,11 +31,16 @@ npm test             # run tests
 npm run lint         # lint
 ```
 
-### DotnetApp (.NET)
+### DotnetApp (.NET 9 MVC + Tailwind CSS)
 ```bash
+# Run from DotnetApp/DotnetApp/
 dotnet build         # build
-dotnet run           # run
+dotnet run           # run (http://localhost:5xxx)
 dotnet test          # run tests
+
+# CSS — run alongside dotnet run
+npm run css:watch    # watch & rebuild Tailwind on change
+npm run css:build    # one-shot minified build
 ```
 
 ### GoApp (Go)
