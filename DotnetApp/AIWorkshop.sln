@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotnetApp", "DotnetApp", "{4C3F9227-D12A-8F9D-B921-D25331AA26D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetApp", "DotnetApp.csproj", "{4591AEC9-CA42-8AF7-8B84-099EB05C7B5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4591AEC9-CA42-8AF7-8B84-099EB05C7B5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4591AEC9-CA42-8AF7-8B84-099EB05C7B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4591AEC9-CA42-8AF7-8B84-099EB05C7B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4591AEC9-CA42-8AF7-8B84-099EB05C7B5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4591AEC9-CA42-8AF7-8B84-099EB05C7B5B} = {4C3F9227-D12A-8F9D-B921-D25331AA26D4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61E92BFC-3BB5-43A1-AFC0-95ABA84AA6F6}
+	EndGlobalSection
+EndGlobal

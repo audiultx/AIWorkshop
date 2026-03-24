@@ -1,0 +1,111 @@
+﻿@model DotnetApp.Models.UrlViewModel
+
+@{
+    ViewData["Title"] = "URL Shortener";
+}
+
+<div class="min-h-screen font-sans text-[var(--text)] p-5 [background:radial-gradient(circle_at_top,var(--bg-1)_0%,var(--bg-2)_55%,var(--bg-3)_100%)]">
+    <div class="w-full flex flex-col gap-3.5">
+
+        {{-- Top chrome bar --}}
+        <div class="flex items-center justify-between border border-[var(--chrome-border)] bg-[var(--chrome-bg)] rounded-[10px] px-3.5 py-2.5 backdrop-blur-md">
+            <span class="font-mono text-[11px] tracking-[0.15em] uppercase text-[var(--muted)]">URL Shortener</span>
+            <button
+                class="border border-[var(--field-border)] bg-[var(--field-bg)] text-[var(--input-text)] rounded-full font-mono text-[11px] tracking-[0.12em] uppercase px-3 py-[7px] cursor-pointer transition-[border-color,color,transform] duration-150 hover:border-[var(--copy-hover-border)] hover:text-[var(--copy-hover-text)] hover:-translate-y-px"
+                id="themeToggle" type="button" onclick="toggleTheme()">Light</button>
+        </div>
+
+        {{-- Main card --}}
+        <div class="w-full max-w-[840px] bg-[var(--panel-bg)] min-h-[420px] rounded-xl flex flex-col items-center justify-center px-8 py-10 border border-[var(--panel-border)] [box-shadow:var(--shadow)] self-center">
+
+            <div class="font-mono text-[10px] tracking-[0.2em] text-[var(--badge)] uppercase mb-10 text-center">
+                v1.0 | url shortener
+            </div>
+
+            <p class="text-[13px] font-light text-[var(--muted)] mb-1.5 tracking-[0.05em]">paste your long url</p>
+            <h1 class="text-[28px] max-sm:text-2xl font-medium text-[var(--text)] mb-10 -tracking-[0.02em] text-center">Make it short.</h1>
+
+            <div class="w-full max-w-[480px]">
+                <form asp-action="Shorten" asp-controller="Home" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="flex max-sm:flex-col border border-[var(--field-border)] rounded-md overflow-hidden bg-[var(--field-bg)]">
+                        <input
+                            asp-for="LongUrl"
+                            class="flex-1 bg-transparent border-none outline-none px-4 py-[13px] text-sm font-mono text-[var(--input-text)] min-w-0 placeholder:text-[var(--placeholder)]"
+                            placeholder="https://your-very-long-url.com/goes/here"
+                            autocomplete="off" />
+                        <button
+                            class="bg-[var(--button-bg)] text-[var(--button-fg)] border-none px-5 py-[13px] text-[13px] font-medium cursor-pointer tracking-[0.02em] transition-colors duration-150 hover:bg-[var(--button-hover)] whitespace-nowrap max-sm:w-full"
+                            type="submit">Shorten -&gt;</button>
+                    </div>
+                </form>
+
+                @if (!string.IsNullOrEmpty(Model?.ShortUrl))
+                {
+                    <div class="mt-6 px-4 py-[14px] bg-[var(--field-bg)] border border-[var(--field-border)] rounded-md flex max-sm:flex-col items-center max-sm:items-start justify-between gap-3">
+                        <span class="font-mono text-[13px] text-[var(--text)] break-all" id="shortUrlDisplay">@Model.ShortUrl</span>
+                        <button
+                            class="shrink-0 text-[11px] text-[var(--copy-text)] cursor-pointer tracking-[0.1em] uppercase font-mono border border-[var(--copy-border)] px-2.5 py-1 rounded bg-transparent hover:text-[var(--copy-hover-text)] hover:border-[var(--copy-hover-border)] transition-colors duration-150"
+                            type="button" onclick="copyUrl('@Model.ShortUrl')">copy</button>
+                    </div>
+                }
+            </div>
+
+            <div class="flex gap-8 mt-10 items-center max-sm:w-full max-sm:gap-4 max-sm:justify-between">
+                <div class="text-center">
+                    <div class="font-mono text-[20px] font-medium text-[var(--text)]">@(Model?.TotalLinks ?? "12.4k")</div>
+                    <div class="text-[11px] text-[var(--stat-label)] tracking-[0.1em] uppercase mt-0.5">links created</div>
+                </div>
+                <div class="w-px bg-[var(--divider)] self-stretch max-sm:hidden"></div>
+                <div class="text-center">
+                    <div class="font-mono text-[20px] font-medium text-[var(--text)]">@(Model?.TotalClicks ?? "98.1k")</div>
+                    <div class="text-[11px] text-[var(--stat-label)] tracking-[0.1em] uppercase mt-0.5">total clicks</div>
+                </div>
+                <div class="w-px bg-[var(--divider)] self-stretch max-sm:hidden"></div>
+                <div class="text-center">
+                    <div class="font-mono text-[20px] font-medium text-[var(--text)]">99.9%</div>
+                    <div class="text-[11px] text-[var(--stat-label)] tracking-[0.1em] uppercase mt-0.5">uptime</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const THEME_KEY = 'dotnetapp-theme';
+
+    function setTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        const btn = document.getElementById('themeToggle');
+        btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        window.localStorage.setItem(THEME_KEY, theme);
+    }
+
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme') || 'dark';
+        setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    function copyUrl(url) {
+        navigator.clipboard.writeText(url).catch(() => {
+            const el = document.getElementById('shortUrlDisplay');
+            if (el) {
+                const range = document.createRange();
+                range.selectNode(el);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+            }
+        });
+    }
+
+    (function () {
+        const saved = window.localStorage.getItem(THEME_KEY);
+        const theme = (saved === 'dark' || saved === 'light') ? saved
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(theme);
+    })();
+</script>
+}
